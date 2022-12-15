@@ -22,3 +22,14 @@ resource "aws_s3_bucket_website_configuration" "websitelaerte" {
     key = "error.html"
   }
 }
+resource "aws_s3_object" "object" {
+  bucket = "websitelaerte"
+  key    = "new_object_key"
+  source = "./index.html"
+}
+
+
+
+
+
+
