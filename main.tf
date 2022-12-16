@@ -18,15 +18,19 @@ resource "aws_s3_bucket_website_configuration" "websitelaerte" {
     suffix = "index.html"
   }
 
-  error_document {
+   error_document {
     key = "error.html"
   }
 }
-resource "aws_s3_object" "object" {
-  bucket = aws_s3_bucket.websitelaerte.bucket
-  key    = "index.html"
-  source = "./index.html"
-}
+
+resource "aws_s3_object" "page_index" {
+bucket = aws_s3_bucket.websitelaerte.bucket
+key    = "index.html"
+content_type = "text/html; character=UTF-8"
+source = "website/index.html"
+etag = filemd5("website/index.html")
+}  
+
 
 resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
   bucket = aws_s3_bucket.websitelaerte.id
@@ -35,18 +39,17 @@ resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
 data "aws_iam_policy_document" "allow_access_from_another_account" {
   statement {
     principals {
-      type        = "AWS"
+      type        = "*"
       identifiers = ["*"]
       }
 
     actions = [
-      "s3:GetObject",
-      "s3:ListBucket",
-    ]
+      "s3:GetObject"
+      ]
 
     resources = [
-      aws_s3_bucket.websitelaerte.arn,
-      "${aws_s3_bucket.websitelaerte.arn}/*",
+      #aws_s3_bucket.websitelaerte.arn,
+      "${aws_s3_bucket.websitelaerte.arn}/*"
     ]
   }
 }
@@ -62,7 +65,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "websitelaerte" {
   rule {
     apply_server_side_encryption_by_default {
       kms_master_key_id = aws_kms_key.keyweb.arn
-      sse_algorithm     = "aws:kms"
+      sse_algorithm     = "[aws:kms]"
     }
   }
 }
