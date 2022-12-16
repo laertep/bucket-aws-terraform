@@ -51,6 +51,23 @@ data "aws_iam_policy_document" "allow_access_from_another_account" {
   }
 }
 
+resource "aws_kms_key" "keyweb" {
+  description             = "Encryption Bucket - websitelaerte"
+  deletion_window_in_days = 7
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "websitelaerte" {
+  bucket = aws_s3_bucket.websitelaerte.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.keyweb.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
+
+
 
 
 
