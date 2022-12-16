@@ -23,10 +23,35 @@ resource "aws_s3_bucket_website_configuration" "websitelaerte" {
   }
 }
 resource "aws_s3_object" "object" {
-  bucket = "websitelaerte"
-  key    = "new_object_key"
+  bucket = aws_s3_bucket.websitelaerte.bucket
+  key    = "index.html"
   source = "./index.html"
 }
+
+resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
+  bucket = aws_s3_bucket.websitelaerte.id
+  policy = data.aws_iam_policy_document.allow_access_from_another_account.json
+}
+data "aws_iam_policy_document" "allow_access_from_another_account" {
+  statement {
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+      }
+
+    actions = [
+      "s3:GetObject",
+      "s3:ListBucket",
+    ]
+
+    resources = [
+      aws_s3_bucket.websitelaerte.arn,
+      "${aws_s3_bucket.websitelaerte.arn}/*",
+    ]
+  }
+}
+
+
 
 
 
