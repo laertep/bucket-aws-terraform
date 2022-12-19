@@ -65,7 +65,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "websitelaerte" {
   rule {
     apply_server_side_encryption_by_default {
       kms_master_key_id = aws_kms_key.keyweb.arn
-      sse_algorithm     = "[aws:kms]"
+      sse_algorithm     = "aws:kms"
     }
   }
 }
